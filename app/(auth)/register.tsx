@@ -1,3 +1,4 @@
+import * as Linking from "expo-linking";
 import { Link, router } from "expo-router";
 import { useState } from "react";
 import { ActivityIndicator, Alert, KeyboardAvoidingView, Platform, Pressable, StyleSheet, Text, TextInput, View, } from "react-native";
@@ -36,10 +37,14 @@ export default function RegisterScreen() {
     try {
         setIsSubmitting(true);
 
+        const redirectUrl = Linking.createURL("/");
+        console.log("Redirect URL:", redirectUrl);
+
         const { data, error } = await supabase.auth.signUp({
             email: trimmedEmail,
             password,
             options: {
+                emailRedirectTo: redirectUrl,
                 data: {
                     username: trimmedUsername,
                 },
