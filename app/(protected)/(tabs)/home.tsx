@@ -1,6 +1,6 @@
-import { Alert, Pressable, StyleSheet, Text, View } from "react-native";
+import { Alert, StyleSheet, Text, View } from "react-native";
 
-import { supabase } from "../../lib/supabase";
+import { supabase } from "../../../lib/supabase";
 
 export default function HomeScreen() {
     async function handleLogout() {
@@ -14,16 +14,7 @@ export default function HomeScreen() {
     return ( 
         <View style={styles.container}>
             <Text style={styles.title}>KickOff</Text>
-
-            <Pressable
-                onPress={handleLogout}
-                style={({ pressed}) => [
-                    styles.button,
-                    pressed && styles.buttonPressed,
-                ]}
-            >
-                <Text style={styles.buttonText}>Log out</Text>
-            </Pressable>
+            <Text style={styles.subtitle}>Find and join local 5-a-side matches</Text>
         </View>
     );
 }
@@ -39,6 +30,11 @@ const styles = StyleSheet.create({
     title: {
         fontSize: 32,
         fontWeight: "bold",
+    },
+
+    subtitle: {
+        fontSize: 16,
+        textAlign: "center",
     },
 
     button: {

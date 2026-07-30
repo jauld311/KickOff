@@ -73,7 +73,8 @@ export default function LoginScreen() {
                     disabled={isSubmitting}
                     style={({ pressed }) => [
                         styles.button,
-                        pressed && styles.buttonDisabled,
+                        pressed && styles.buttonPressed, 
+                        isSubmitting && styles.buttonDisabled,
                     ]}
                 >
                     {isSubmitting ? (
