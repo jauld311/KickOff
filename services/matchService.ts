@@ -24,24 +24,40 @@ export async function createMatch(
     const userId = await getCurrentUserId();
 
     const { data, error } = await supabase
-    .from("matches")
-    .insert({
-        creator_id: userId,
-        title: input.title.trim(),
-        description: input.description?.trim() || null,
-        location: input.location.trim(),
-        match_date: input.matchDate,
-        maximum_players: input.maximumPlayers,
-        status: "open",
-    })
-    .select()
-    .single();
+        .from("matches")
+        .insert({
+            creator_id: userId,
+            title: input.title.trim(),
+            description: input.description?.trim() || null,
+            location: input.location.trim(),
+            match_date: input.matchDate,
+            maximum_players: input.maximumPlayers,
+            status: "open",
+        })
+        .select()
+        .single();
 
     if (error) {
         throw error;
     }
 
     return data as Match;
+}
+
+export async function getCreatedMatches(): Promise<Match[]> {
+    const userId = await getCurrentUserId();
+
+    const { data, error } = await supabase
+        .from("matches")
+        .select("*")
+        .eq("creator_id", userId)
+        .order("match_date", { ascending: true });
+
+    if (error) {
+        throw new Error(error.message);
+    }
+
+    return (data ?? []) as Match[];
 }
 
 export async function getJoinedMatches(): Promise<Match[]> {
@@ -65,18 +81,18 @@ export async function getJoinedMatches(): Promise<Match[]> {
         return [];
     }
 
-    const { data: matchData, error: matchError } = 
+    const { data: matchData, error: matchError } =
         await supabase
             .from("matches")
             .select("*")
             .in("id", matchIds)
-            .order("match_date", { ascending: true});
+            .order("match_date", { ascending: true });
 
-        if (matchError) {
-            throw matchError;
-        }
+    if (matchError) {
+        throw matchError;
+    }
 
-        return (matchData ?? []) as Match[];
+    return (matchData ?? []) as Match[];
 }
 
 
@@ -84,11 +100,11 @@ export async function joinMatch(matchId: string): Promise<void> {
     const userId = await getCurrentUserId();
 
     const { error } = await supabase
-    .from("match_participants")
-    .insert({
-        match_id: matchId,
-        user_id: userId,
-    });
+        .from("match_participants")
+        .insert({
+            match_id: matchId,
+            user_id: userId,
+        });
 
     if (error) {
         throw error;
@@ -99,10 +115,10 @@ export async function leaveMatch(matchId: string): Promise<void> {
     const userId = await getCurrentUserId();
 
     const { error } = await supabase
-    .from("match_participants")
-    .delete()
-    .eq("match_id", matchId)
-    .eq("user_id", userId);
+        .from("match_participants")
+        .delete()
+        .eq("match_id", matchId)
+        .eq("user_id", userId);
 
     if (error) {
         throw error;

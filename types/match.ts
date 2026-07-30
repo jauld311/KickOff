@@ -8,7 +8,7 @@ export type Match = {
     location: string;
     match_date: string;
     maximum_players: number;
-    satus: MatchStatus;
+    status: MatchStatus;
     created_at: string;
     updated_at: string;
 };
