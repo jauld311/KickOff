@@ -7,10 +7,6 @@ import { Profile } from "../../../types/profile";
 
 import { supabase } from "../../../lib/supabase";
 
-const [profile, setProfile] = useState<Profile | null>(null);
-const [email, setEmail] = useState("");
-const [loading, setLoading] = useState(true);
-
 export default function ProfileScreen() {
 const [profile, setProfile] = useState<Profile | null>(null);
 const [email, setEmail] = useState("");

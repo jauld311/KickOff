@@ -50,6 +50,9 @@ export default function RegisterScreen() {
                 },
             },
         });
+
+        console.log("Signup data:", data);
+        console.log("Signup error:", error);
     
 
     if (error) {

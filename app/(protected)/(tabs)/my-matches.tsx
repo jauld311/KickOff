@@ -1,9 +1,9 @@
-import { useFocusEffect } from "expo-router";
+import { router, useFocusEffect } from "expo-router";
 import { useCallback, useState } from "react";
 import { ActivityIndicator, FlatList, Pressable, StyleSheet, Text, View, } from "react-native";
 
 import { getCreatedMatches, getJoinedMatches, } from "../../../services/matchService";
-import type { Match } from "../../../types/match";
+import type { Match, MatchWithCount } from "../../../types/match";
 
 type MatchView = "created" | "joined";
 
@@ -11,7 +11,7 @@ export default function MyMatchesScreen() {
     const [selectedView, setSelectedView] =
         useState<MatchView>("created");
 
-    const [matches, setMatches] = useState<Match[]>([]);
+    const [matches, setMatches] = useState<MatchWithCount[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [errorMessage, setErrorMessage] = useState("");
 
@@ -61,9 +61,14 @@ export default function MyMatchesScreen() {
         return status.charAt(0).toUpperCase() + status.slice(1);
     }
 
-    function renderMatch({ item }: {item: Match}) {
+    function renderMatch({ item }: {item: MatchWithCount}) {
         return (
             <Pressable
+                onPress={() => router.push({
+                    pathname: "/matches/[id]", 
+                    params: { id: item.id },
+                })
+                }
                 style={({ pressed }) => [
                     styles.matchCard,
                     pressed && styles.matchCardPressed,
@@ -98,7 +103,7 @@ export default function MyMatchesScreen() {
                 </Text>
 
                 <Text style={styles.matchDetail}>
-                    Maximum players: {item.maximum_players}
+                    Players: {item.participant_count}/{item.maximum_players}
                 </Text>
 
                 {item.description ? (
