@@ -1,5 +1,5 @@
 import { Picker } from "@react-native-picker/picker";
-import { router } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import { useState } from "react";
 import { Alert, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
 
@@ -7,6 +7,7 @@ import { createMatch } from "../../services/matchService";
 
 export default function CreateMatchScreen() {
     const [title, setTitle] = useState("");
+    const { groupId } = useLocalSearchParams<{ groupId: string }>();
     const [location, setLocation] = useState("");
     const [date, setDate] = useState("");
     const [maximumPlayers, setMaximumPlayers] = useState(10);
@@ -22,6 +23,14 @@ export default function CreateMatchScreen() {
             return;
         }
 
+        if (!groupId) {
+            Alert.alert(
+                "Missing group",
+                "This match must be created from inside a group"
+            );
+            return;
+        }
+
         try {
             setLoading(true);
 
@@ -31,6 +40,7 @@ export default function CreateMatchScreen() {
                 matchDate: date,
                 maximumPlayers,
                 description,
+                groupId,
             });
 
             Alert.alert("Success", "Match created successfully");

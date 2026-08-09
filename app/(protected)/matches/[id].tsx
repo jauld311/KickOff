@@ -4,6 +4,7 @@ import { ActivityIndicator, Alert, Pressable, StyleSheet, Text, View } from "rea
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import {
+    cancelMatch,
     deleteMatch,
     getMatchById,
     hasJoinedMatch,
@@ -26,6 +27,7 @@ export default function MatchDetailsScreen() {
     const [isUpdatingParticipation, setIsUpdatingParticipation] =
         useState(false);
     const [isDeleting, setIsDeleting] = useState(false);
+    const [isCancelling, setIsCancelling] = useState(false);
 
     const { user } = useAuth();
 
@@ -165,6 +167,50 @@ export default function MatchDetailsScreen() {
         );
     }
 
+    function handleCancelMatch() {
+        if (!match) {
+            return;
+        }
+
+        Alert.alert(
+            "cancel match?",
+            "Players will no longer be able to join this match.",
+            [
+                {
+                    text: "Keep Match",
+                    style: "cancel",
+                },
+                {
+                    text: "Cancel Match",
+                    style: "destructive",
+                    onPress: async () => {
+                        try {
+                            setIsCancelling(true);
+
+                            await cancelMatch(match.id);
+
+                            setMatch({
+                                ...match,
+                                status: "cancelled",
+                                is_posted: false,
+                                posted_at: null,
+                            });
+                        } catch (error) {
+                            const message =
+                                error instanceof Error
+                                    ? error.message
+                                    : "Unable to cancel the match.";
+
+                            Alert.alert("cancellation failed", message);
+                        } finally {
+                            setIsCancelling(false);
+                        }
+                    },
+                },
+            ]
+        );
+    }
+
     if (isLoading) {
         return (
             <View style={styles.centered}>
@@ -193,9 +239,20 @@ export default function MatchDetailsScreen() {
             <View style={styles.header}>
                 <Text style={styles.title}>{match.title}</Text>
 
-                <View style={styles.statusBadge}>
-                    <Text style={styles.statusText}>
-                        {match.status.charAt(0).toUpperCase() + match.status.slice(1)}
+                <View
+                    style={[
+                        styles.statusBadge,
+                        match.status === "cancelled" && styles.cancelledStatusBadge,
+                    ]}
+                >
+                    <Text
+                        style={[
+                            styles.statusText,
+                            match.status === "cancelled" &&
+                            styles.cancelledStatusText,
+                        ]}
+                    >
+                        {match.status.toUpperCase()}
                     </Text>
                 </View>
             </View>
@@ -239,31 +296,9 @@ export default function MatchDetailsScreen() {
                 </View>
             ) : null}
 
-            <View style={styles.actionSection}>
-                {isCreator ? (
-                    <Pressable
-                        onPress={handleFeedToggle}
-                        disabled={isUpdatingFeed || isCancelled}
-                        style={({ pressed }) => [
-                            styles.actionButton,
-                            match.is_posted && styles.removeFeedButton,
-                            pressed && styles.buttonPressed,
-                            (isUpdatingFeed || isCancelled) &&
-                            styles.buttonDisabled,
-                        ]}
-                    >
-                        <Text style={styles.actionButtonText}>
-                            {isCancelled
-                                ? "Match Cancelled"
-                                : isUpdatingFeed
-                                    ? "Updating..."
-                                    : match.is_posted
-                                        ? "Remove from Feed"
-                                        : "Post to Feed"
-                            }
-                        </Text>
-                    </Pressable>
-                ) : isCancelled ? (
+            {/* PLAYER / PARTICIPATION ACTION */}
+            {!isCreator ? (
+                isCancelled ? (
                     <Pressable
                         disabled
                         style={[
@@ -283,8 +318,7 @@ export default function MatchDetailsScreen() {
                             styles.actionButton,
                             styles.leaveButton,
                             pressed && styles.buttonPressed,
-                            isUpdatingParticipation &&
-                            styles.buttonDisabled,
+                            isUpdatingParticipation && styles.buttonDisabled,
                         ]}
                     >
                         <Text style={styles.actionButtonText}>
@@ -312,8 +346,7 @@ export default function MatchDetailsScreen() {
                         style={({ pressed }) => [
                             styles.actionButton,
                             pressed && styles.buttonPressed,
-                            isUpdatingParticipation &&
-                            styles.buttonDisabled,
+                            isUpdatingParticipation && styles.buttonDisabled,
                         ]}
                     >
                         <Text style={styles.actionButtonText}>
@@ -322,37 +355,64 @@ export default function MatchDetailsScreen() {
                                 : "Join Match"}
                         </Text>
                     </Pressable>
-                )}
+                )
+            ) : null}
 
-                <Pressable
-                    onPress={() =>
-                        router.push({
-                            pathname: "/matches/edit/[id]",
-                            params: { id: match.id },
-                        })
-                    }
-                    style={({ pressed }) => [
-                        styles.editButton,
-                        pressed && styles.buttonPressed,
-                    ]}
-                >
-                    <Text style={styles.editButtonText}>Edit Match</Text>
-                </Pressable>
+            {isCreator ? (
+                <View>
+                    <Pressable
+                        onPress={() =>
+                            router.push({
+                                pathname: "/matches/edit/[id]",
+                                params: { id: match.id },
+                            })
+                        }
+                        style={({ pressed }) => [
+                            styles.editButton,
+                            pressed && styles.buttonPressed,
+                        ]}
+                    >
+                        <Text style={styles.editButtonText}>
+                            Edit Match
+                        </Text>
+                    </Pressable>
 
-                <Pressable
-                    onPress={handleDeleteMatch}
-                    disabled={isDeleting}
-                    style={({ pressed }) => [
-                        styles.deleteButton,
-                        pressed && styles.buttonPressed,
-                        isDeleting && styles.buttonDisabled,
-                    ]}
-                >
-                    <Text style={styles.deleteButtonText}>
-                        {isDeleting ? "Deleting..." : "Delete Match"}
-                    </Text>
-                </Pressable>
-            </View>
+                    {match.status !== "cancelled" ? (
+                        <Pressable
+                            onPress={handleCancelMatch}
+                            disabled={isCancelling}
+                            style={({ pressed }) => [
+                                styles.cancelButton,
+                                pressed && styles.buttonPressed,
+                                isCancelling && styles.buttonDisabled,
+                            ]}
+                        >
+                            <Text style={styles.cancelButtonText}>
+                                {isCancelling
+                                    ? "Cancelling..."
+                                    : "Cancel Match"}
+                            </Text>
+                        </Pressable>
+                    ) : null}
+
+                    <Pressable
+                        onPress={handleDeleteMatch}
+                        disabled={isDeleting}
+                        style={({ pressed }) => [
+                            styles.deleteButton,
+                            pressed && styles.buttonPressed,
+                            isDeleting && styles.buttonDisabled,
+                        ]}
+                    >
+                        <Text style={styles.deleteButtonText}>
+                            {isDeleting
+                                ? "Deleting..."
+                                : "Delete Match"}
+                        </Text>
+                    </Pressable>
+                </View>
+            ) : null}
+
         </SafeAreaView>
     );
 }
@@ -495,6 +555,7 @@ const styles = StyleSheet.create({
     },
 
     leaveButton: {
+        marginTop: 20,
         backgroundColor: "#B91C1C",
     },
 
@@ -538,12 +599,38 @@ const styles = StyleSheet.create({
         borderColor: "#B91C1C",
         backgroundColor: "#FFFFFF",
         marginTop: 12,
-        },
+    },
 
     deleteButtonText: {
         color: "#B91C1C",
         fontSize: 16,
         fontWeight: "700",
+    },
+
+    cancelButton: {
+        minHeight: 54,
+        alignItems: "center",
+        justifyContent: "center",
+        borderRadius: 10,
+        borderWidth: 1,
+        borderColor: "#D97706",
+        backgroundColor: "#FFFFFF",
+        marginTop: 12,
+    },
+
+    cancelButtonText: {
+        color: "#D97706",
+        fontSize: 16,
+        fontWeight: "700",
+    },
+
+    cancelledStatusBadge: {
+        backgroundColor: "#FEE2E2",
+        borderColor: "#DC2626",
+    },
+
+    cancelledStatusText: {
+        color: "#DC2626",
     },
 
 });

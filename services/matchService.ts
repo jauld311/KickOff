@@ -35,6 +35,7 @@ export async function createMatch(
         .from("matches")
         .insert({
             creator_id: userId,
+            group_id: input.groupId,
             title: input.title.trim(),
             description: input.description?.trim() || null,
             location: input.location.trim(),
@@ -220,6 +221,21 @@ export async function getParticipantCount(
     return count ?? 0;
 }
 
+export async function cancelMatch(matchId: string): Promise<void> {
+    const { error } = await supabase
+        .from("matches")
+        .update({
+            status: "cancelled",
+            is_posted: false,
+            posted_at: null,
+            updated_at: new Date().toISOString(),
+        })
+        .eq("id", matchId);
+
+    if (error) {
+        throw new Error(error.message)
+    }
+}
 export async function postMatchToFeed(matchId: string): Promise<void> {
     const { error } = await supabase
         .from("matches")
@@ -292,4 +308,23 @@ export async function hasJoinedMatch(
     }
 
     return (count ?? 0) > 0;
+}
+
+export async function getMatchesByGroup(
+    groupId: string
+) : Promise<MatchWithCount[]> {
+        const { data, error } = await supabase
+            .from("matches")
+            .select(`
+            *,
+            match_participants(count)
+        `)
+        .eq("group_id", groupId)
+        .order("match_date", { ascending: true });
+
+    if (error) {
+        throw new Error(error.message);
+    }
+
+    return (data ?? []).map(mapMatchWithCount);
 }

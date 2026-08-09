@@ -110,16 +110,6 @@ export default function MatchesScreen() {
         <View style={styles.container}>
             <Text style={styles.title}>Matches</Text>
 
-            <Pressable
-                onPress={() => router.push("/create-match")}
-                style={({ pressed }) => [
-                    styles.createButton,
-                    pressed && styles.buttonPressed,
-                ]}
-            >
-                <Text style={styles.createButtonText}>Create Match</Text>
-            </Pressable>
-
             {isLoading ? (
                 <View style={styles.messageContainer}>
                     <ActivityIndicator size="large" />
