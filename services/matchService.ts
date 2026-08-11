@@ -1,5 +1,5 @@
 import { supabase } from "../lib/supabase";
-import { CreateMatchInput, Match, MatchWithCount } from "../types/match";
+import { CreateMatchInput, Match, MatchWithCount, UpdateMatchInput } from "../types/match";
 
 async function getCurrentUserId() {
     const {
@@ -172,7 +172,7 @@ export async function leaveMatch(matchId: string): Promise<void> {
 
 export async function updateMatch(
     matchId: string,
-    input: CreateMatchInput
+    input: UpdateMatchInput
 ): Promise<Match> {
     const { data, error } = await supabase
         .from("matches")

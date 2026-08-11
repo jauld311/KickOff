@@ -82,7 +82,7 @@ export default function CreateGroupScreen() {
                         value={description}
                         onChangeText={setDescription}
                         placeholder="Describe the group"
-                        placeholderTextColor="6B7280"
+                        placeholderTextColor="#6B7280"
                         multiline
                         style={[styles.input, styles.description]}
                     />
@@ -111,18 +111,20 @@ export default function CreateGroupScreen() {
 const styles = StyleSheet.create({
     screen: {
         flex: 1,
-        backgroundColor: "#FFFFFF",
+        backgroundColor: "#F5F6F8",
     },
 
     container: {
-        padding: 24,
+        paddingHorizontal: 24,
+        paddingTop: 12,
+        paddingBottom: 48,
     },
 
     title: {
         fontSize: 32,
         fontWeight: "bold",
         color: "#111827",
-        marginBottom: 28,
+        marginBottom: 22,
     },
 
     label: {
@@ -135,12 +137,13 @@ const styles = StyleSheet.create({
     input: {
         minHeight: 54,
         borderWidth: 1,
-        borderColor: "#C7CDD4",
+        borderColor: "#D1D5DB",
         borderRadius: 10,
         paddingHorizontal: 14,
         paddingVertical: 14,
         fontSize: 16,
         color: "#111827",
+        backgroundColor: "#FFFFFF",
         marginBottom: 20,
     },
 
@@ -154,7 +157,7 @@ const styles = StyleSheet.create({
         alignItems: "center",
         justifyContent: "center",
         borderRadius: 10,
-        backgroundColor: "#111827",
+        backgroundColor: "#FF7900",
     },
 
     buttonPressed: {

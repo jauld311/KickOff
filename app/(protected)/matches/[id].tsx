@@ -15,6 +15,7 @@ import {
 } from "../../../services/matchService";
 import type { MatchWithCount } from "../../../types/match";
 
+import { Ionicons } from "@expo/vector-icons";
 import { useAuth } from "../../../contexts/AuthContext";
 
 export default function MatchDetailsScreen() {
@@ -252,49 +253,84 @@ export default function MatchDetailsScreen() {
                             styles.cancelledStatusText,
                         ]}
                     >
-                        {match.status.toUpperCase()}
+                        {match.status.charAt(0).toUpperCase() + match.status.slice(1)}
                     </Text>
                 </View>
             </View>
 
             <View style={styles.card}>
-                <View style={styles.detailRow}>
-                    <Text style={styles.label}>Location</Text>
-                    <Text style={styles.value}>{match.location}</Text>
+                <View style={styles.detailItem}>
+                    <View style={styles.detailIcon}>
+                        <Ionicons
+                            name="location-outline"
+                            size={22}
+                            color="#FF7900"
+                        />
+                    </View>
+
+                    <View style={styles.detailContent}>
+                        <Text style={styles.label}>Location</Text>
+                        <Text style={styles.value}>{match.location}</Text>
+                    </View>
                 </View>
 
                 <View style={styles.divider} />
 
-                <View style={styles.detailRow}>
-                    <Text style={styles.label}>Date and time</Text>
-                    <Text style={styles.value}>
-                        {new Date(match.match_date).toLocaleString("en-GB", {
-                            weekday: "long",
-                            day: "numeric",
-                            month: "long",
-                            year: "numeric",
-                            hour: "2-digit",
-                            minute: "2-digit",
-                        })}
-                    </Text>
+                <View style={styles.detailItem}>
+                    <View style={styles.detailIcon}>
+                        <Ionicons
+                            name="calendar-outline"
+                            size={22}
+                            color="#FF7900"
+                        />
+                    </View>
+
+                    <View style={styles.detailContent}>
+                        <Text style={styles.label}>Date and time</Text>
+
+                        <Text style={styles.value}>
+                            {new Date(match.match_date).toLocaleString("en-GB", {
+                                weekday: "long",
+                                day: "numeric",
+                                month: "long",
+                                year: "numeric",
+                                hour: "2-digit",
+                                minute: "2-digit",
+                            })}
+                        </Text>
+                    </View>
                 </View>
 
                 <View style={styles.divider} />
 
-                <View style={styles.detailRow}>
-                    <Text style={styles.label}>Players</Text>
-                    <Text style={styles.playerCount}>
-                        {match.participant_count}/{match.maximum_players}
-                    </Text>
+                <View style={styles.detailItem}>
+                    <View style={styles.detailIcon}>
+                        <Ionicons
+                            name="people-outline"
+                            size={22}
+                            color="#FF7900"
+                        />
+                    </View>
+
+                    <View style={styles.detailContent}>
+                        <Text style={styles.label}>Players</Text>
+
+                        <Text style={styles.playerCount}>
+                            {match.participant_count}/{match.maximum_players}
+                        </Text>
+                    </View>
                 </View>
+
+                {match.description ? (
+                    <View style={styles.descriptionCard}>
+                        <Text style={styles.sectionTitle}>Description</Text>
+                        <Text style={styles.description}>
+                            {match.description}
+                        </Text>
+                    </View>
+                ) : null}
+
             </View>
-
-            {match.description ? (
-                <View style={styles.descriptionCard}>
-                    <Text style={styles.sectionTitle}>Description</Text>
-                    <Text style={styles.description}>{match.description}</Text>
-                </View>
-            ) : null}
 
             {/* PLAYER / PARTICIPATION ACTION */}
             {!isCreator ? (
@@ -456,7 +492,7 @@ const styles = StyleSheet.create({
     statusText: {
         fontSize: 13,
         fontWeight: "700",
-        color: "166534",
+        color: "#166534",
     },
 
     card: {
@@ -464,10 +500,31 @@ const styles = StyleSheet.create({
         borderRadius: 14,
         padding: 20,
         marginBottom: 18,
+
+        shadowColor: "#000000",
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.05,
+        shadowRadius: 5,
+        elevation: 2,
     },
 
-    detailRow: {
-        gap: 6,
+    detailItem: {
+        flexDirection: "row",
+        alignItems: "center",
+    },
+
+    detailIcon: {
+        width: 38,
+        alignItems: "center",
+        justifyContent: "center",
+        marginRight: 12,
+    },
+
+    detailContent: {
+        flex: 1,
     },
 
     label: {
@@ -498,6 +555,17 @@ const styles = StyleSheet.create({
         backgroundColor: "#FFFFFF",
         borderRadius: 14,
         padding: 20,
+        marginTop: 18,
+        marginBottom: 18,
+
+        shadowColor: "#000000",
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.05,
+        shadowRadius: 5,
+        elevation: 2
     },
 
     sectionTitle: {
@@ -551,7 +619,7 @@ const styles = StyleSheet.create({
         alignItems: "center",
         justifyContent: "center",
         borderRadius: 10,
-        backgroundColor: "#111827",
+        backgroundColor: "#FF7900",
     },
 
     leaveButton: {
@@ -579,13 +647,13 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         borderRadius: 10,
         borderWidth: 1,
-        borderColor: "#111827",
+        borderColor: "#FF7900",
         backgroundColor: "#FFFFFF",
         marginTop: 12,
     },
 
     editButtonText: {
-        color: "#111827",
+        color: "#FF7900",
         fontSize: 16,
         fontWeight: "700",
     },

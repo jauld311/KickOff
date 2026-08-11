@@ -15,167 +15,192 @@ export default function RegisterScreen() {
     async function handleRegister() {
         const trimmedUsername = username.trim();
         const trimmedEmail = email.trim().toLowerCase();
-    
 
-    if (!trimmedUsername || !trimmedEmail || !password || !confirmPassword) {
-        Alert.alert("Missing details", "Please complete every field");
-        return;
-    }
 
-    if (password.length < 6) {
-        Alert.alert( "Invalid password",
-            "Password must be at least 6 characters long"
-        )
-        return;
-    }
+        if (!trimmedUsername || !trimmedEmail || !password || !confirmPassword) {
+            Alert.alert("Missing details", "Please complete every field");
+            return;
+        }
 
-    if (password !== confirmPassword) {
-        Alert.alert("Passwords do not match", "Try again.");
-        return;
-    }
+        if (password.length < 6) {
+            Alert.alert("Invalid password",
+                "Password must be at least 6 characters long"
+            )
+            return;
+        }
 
-    try {
-        setIsSubmitting(true);
+        if (password !== confirmPassword) {
+            Alert.alert("Passwords do not match", "Try again.");
+            return;
+        }
 
-        const redirectUrl = Linking.createURL("/");
-        console.log("Redirect URL:", redirectUrl);
+        try {
+            setIsSubmitting(true);
 
-        const { data, error } = await supabase.auth.signUp({
-            email: trimmedEmail,
-            password,
-            options: {
-                emailRedirectTo: redirectUrl,
-                data: {
-                    username: trimmedUsername,
+            const redirectUrl = Linking.createURL("/");
+            console.log("Redirect URL:", redirectUrl);
+
+            const { data, error } = await supabase.auth.signUp({
+                email: trimmedEmail,
+                password,
+                options: {
+                    emailRedirectTo: redirectUrl,
+                    data: {
+                        username: trimmedUsername,
+                    },
                 },
-            },
-        });
+            });
 
-        console.log("Signup data:", data);
-        console.log("Signup error:", error);
-    
+            console.log("Signup data:", data);
+            console.log("Signup error:", error);
 
-    if (error) {
-        Alert.alert("Registration failed", error.message);
-        return;
+
+            if (error) {
+                Alert.alert("Registration failed", error.message);
+                return;
+            }
+
+            if (!data.session) {
+                Alert.alert(
+                    "Check your email",
+                    "Account created! Confirm your email address to log in."
+                );
+
+                router.replace("/login");
+            }
+        } catch {
+            Alert.alert(
+                "Registration failed",
+                "Something went wrong. Please try again."
+            );
+        } finally {
+            setIsSubmitting(false);
+        }
     }
 
-    if (!data.session) {
-        Alert.alert(
-            "Check your email",
-            "Account created! Confirm your email address to log in."
-        );
+    return (
+        <KeyboardAvoidingView
+            style={styles.container}
+            behavior={Platform.OS === "ios" ? "padding" : undefined}
+        >
+            <View style={styles.formCard}>
+                <Text style={styles.title}>KickOff</Text>
+                <Text style={styles.subtitle}>Create account</Text>
 
-        router.replace("/login");
-    }
-} catch {
-    Alert.alert(
-        "Registration failed",
-        "Something went wrong. Please try again."
-    );
-} finally { 
-    setIsSubmitting(false);
-}
-}
+                <TextInput
+                    value={username}
+                    onChangeText={setUsername}
+                    placeholder="Username"
+                    placeholderTextColor="#9CA3AF"
+                    autoCapitalize="none"
+                    style={styles.input}
+                />
 
-return (
-    <KeyboardAvoidingView
-        style={styles.container}
-        behavior={Platform.OS === "ios" ? "padding" : undefined}
-    >
-        <View style={styles.form}>
-            <Text style={styles.title}>Create account</Text>
+                <TextInput
+                    value={email}
+                    onChangeText={setEmail}
+                    placeholder="Email address"
+                    placeholderTextColor="#9CA3AF"
+                    keyboardType="email-address"
+                    autoCapitalize="none"
+                    autoCorrect={false}
+                    style={styles.input}
+                />
 
-            <TextInput
-                value={username}
-                onChangeText={setUsername}
-                placeholder="Username"
-                placeholderTextColor="#9CA3AF"
-                autoCapitalize="none"
-                style={styles.input}
-            />
+                <TextInput
+                    value={password}
+                    onChangeText={setPassword}
+                    placeholder="Password"
+                    placeholderTextColor="#9CA3AF"
+                    secureTextEntry
+                    autoCapitalize="none"
+                    style={styles.input}
+                />
 
-            <TextInput
-                value={email}
-                onChangeText={setEmail}
-                placeholder="Email address"
-                placeholderTextColor="#9CA3AF"
-                keyboardType="email-address"
-                autoCapitalize="none"
-                autoCorrect={false}
-                style={styles.input}
-            />
+                <TextInput
+                    value={confirmPassword}
+                    onChangeText={setConfirmPassword}
+                    placeholder="Confirm password"
+                    placeholderTextColor="#9CA3AF"
+                    secureTextEntry
+                    autoCapitalize="none"
+                    style={styles.input}
+                />
 
-            <TextInput
-                value={password}
-                onChangeText={setPassword}
-                placeholder="Password"
-                placeholderTextColor="#9CA3AF"
-                secureTextEntry
-                autoCapitalize="none"
-                style={styles.input}
-            />
-
-            <TextInput
-                value={confirmPassword}
-                onChangeText={setConfirmPassword}
-                placeholder="Confirm password"
-                placeholderTextColor="#9CA3AF"
-                secureTextEntry
-                autoCapitalize="none"
-                style={styles.input}
-            />
-
-            <Pressable
-                onPress={handleRegister}
-                disabled={isSubmitting}
-                style={({ pressed}) => [
-                    styles.button,
-                    pressed && styles.buttonPressed,
-                    isSubmitting && styles.buttonDisabled,
-                ]}
+                <Pressable
+                    onPress={handleRegister}
+                    disabled={isSubmitting}
+                    style={({ pressed }) => [
+                        styles.button,
+                        pressed && styles.buttonPressed,
+                        isSubmitting && styles.buttonDisabled,
+                    ]}
                 >
                     {isSubmitting ? (
-                        <ActivityIndicator />
+                        <ActivityIndicator color="#FFFFFF" />
                     ) : (
                         <Text style={styles.buttonText}>Register</Text>
                     )}
                 </Pressable>
 
                 <Link href="/login" style={styles.link}>
-                    Already have an account? 
+                    Already have an account?
                 </Link>
-        </View>
-    </KeyboardAvoidingView>
+            </View>
+        </KeyboardAvoidingView>
     );
-    }
+}
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
         justifyContent: "center",
         padding: 24,
+        backgroundColor: "#000000",
     },
 
-    form: {
+    formCard: {
         width: "100%",
-        gap: 16,
+        backgroundColor: "#FFFFFF",
+        borderRadius: 18,
+        padding: 24,
+
+        shadowColor: "#000000",
+        shadowOffset: {
+            width: 0,
+            height: 3,
+        },
+        shadowOpacity: 0.15,
+        shadowRadius: 8,
+        elevation: 4,
     },
 
     title: {
-        fontSize: 32,
+        fontSize: 34,
         fontWeight: "bold",
         textAlign: "center",
-        marginBottom: 8,
+        color: "#111827",
+    },
+
+    subtitle: {
+        fontSize: 16,
+        fontWeight: "600",
+        textAlign: "center",
+        color: "#FF7900",
+        marginTop: 4,
+        marginBottom: 24,
     },
 
     input: {
         minHeight: 52,
         borderWidth: 1,
-        borderColor: "A1A1AA",
+        borderColor: "#D1D5DB",
         borderRadius: 10,
         paddingHorizontal: 16,
         fontSize: 16,
+        color: "#111827",
+        backgroundColor: "#FFFFFF",
+        marginBottom: 16,
     },
 
     button: {
@@ -183,7 +208,8 @@ const styles = StyleSheet.create({
         alignItems: "center",
         justifyContent: "center",
         borderRadius: 10,
-        backgroundColor: "#111827",
+        backgroundColor: "#FF7900",
+        marginTop: 2,
     },
 
     buttonPressed: {
@@ -197,13 +223,15 @@ const styles = StyleSheet.create({
     buttonText: {
         color: "#FFFFFF",
         fontSize: 16,
-        fontWeight: "600",
+        fontWeight: "700",
     },
 
     link: {
-        marginTop: 8,
+        marginTop: 18,
         textAlign: "center",
         fontSize: 16,
+        fontWeight: "600",
+        color: "#FF7900",
     },
 });
 

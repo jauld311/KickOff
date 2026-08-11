@@ -2,6 +2,7 @@ import { Picker } from "@react-native-picker/picker";
 import { router, useLocalSearchParams } from "expo-router";
 import { useState } from "react";
 import { Alert, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 import { createMatch } from "../../services/matchService";
 
@@ -66,110 +67,114 @@ export default function CreateMatchScreen() {
     }
 
     return (
-        <KeyboardAvoidingView
-            style={styles.screen}
-            behavior={Platform.OS === "ios" ? "padding" : undefined}
-        >
-            <ScrollView
-                contentContainerStyle={styles.container}
-                keyboardShouldPersistTaps="handled"
-                showsVerticalScrollIndicator={false}
+        <SafeAreaView style={styles.screen} edges={["top"]}>
+            <KeyboardAvoidingView
+                style={styles.screen}
+                behavior={Platform.OS === "ios" ? "padding" : undefined}
             >
-                <Text style={styles.title}>Create Match</Text>
-
-                <View style={styles.field}>
-                    <Text style={styles.label}>Match Title</Text>
-                    <TextInput
-                        placeholder="e.g. Tuesday Night Football"
-                        placeholderTextColor="#6B7280"
-                        value={title}
-                        onChangeText={setTitle}
-                        style={styles.input}
-                    />
-                </View>
-
-                <View style={styles.field}>
-                    <Text style={styles.label}>Location</Text>
-                    <TextInput
-                        placeholder="Sports Venue 3G"
-                        placeholderTextColor="#6B7280"
-                        value={location}
-                        onChangeText={setLocation}
-                        style={styles.input}
-                    />
-                </View>
-
-                <View style={styles.field}>
-                    <Text style={styles.label}>Date and Time</Text>
-                    <TextInput
-                        placeholder="28 July 2027, 9:00"
-                        placeholderTextColor="#6B7280"
-                        value={date}
-                        onChangeText={setDate}
-                        style={styles.input}
-                    />
-                </View>
-
-                <View style={styles.field}>
-                    <Text style={styles.label}>Maximum Players</Text>
-                    <View style={styles.pickerContainer}>
-                        <Picker
-                            selectedValue={maximumPlayers}
-                            onValueChange={(value) => setMaximumPlayers(value)}
-                            style={styles.picker}
-                            itemStyle={styles.pickerItem}
-                        >
-                            <Picker.Item label="5-a-side (10 players)" value={10} />
-                            <Picker.Item label="6-a-side (12 players)" value={12} />
-                            <Picker.Item label="7-a-side (14 players)" value={14} />
-                        </Picker>
-                    </View>
-                </View>
-
-                <View style={styles.field}>
-                    <Text style={styles.label}>Description</Text>
-                    <TextInput
-                        placeholder="(optional)"
-                        placeholderTextColor="#6B7280"
-                        value={description}
-                        onChangeText={setDescription}
-                        multiline
-                        style={[styles.input, styles.description]}
-                    />
-                </View>
-
-                <Pressable
-                    onPress={handleCreateMatch}
-                    disabled={loading}
-                    style={({ pressed }) => [
-                        styles.button,
-                        pressed && styles.buttonPressed,
-                        loading && styles.buttonDisabled,
-                    ]}
+                <ScrollView
+                    contentContainerStyle={styles.container}
+                    keyboardShouldPersistTaps="handled"
+                    showsVerticalScrollIndicator={false}
                 >
-                    <Text style={styles.buttonText}>
-                        {loading ? "creating..." : "Create Match"}
-                    </Text>
-                </Pressable>
-            </ScrollView>
-        </KeyboardAvoidingView>
+                    <Text style={styles.title}>Create Match</Text>
+
+                    <View style={styles.field}>
+                        <Text style={styles.label}>Match Title</Text>
+                        <TextInput
+                            placeholder="e.g. Tuesday Night Football"
+                            placeholderTextColor="#6B7280"
+                            value={title}
+                            onChangeText={setTitle}
+                            style={styles.input}
+                        />
+                    </View>
+
+                    <View style={styles.field}>
+                        <Text style={styles.label}>Location</Text>
+                        <TextInput
+                            placeholder="Sports Venue 3G"
+                            placeholderTextColor="#6B7280"
+                            value={location}
+                            onChangeText={setLocation}
+                            style={styles.input}
+                        />
+                    </View>
+
+                    <View style={styles.field}>
+                        <Text style={styles.label}>Date and Time</Text>
+                        <TextInput
+                            placeholder="28 July 2027, 9:00"
+                            placeholderTextColor="#6B7280"
+                            value={date}
+                            onChangeText={setDate}
+                            style={styles.input}
+                        />
+                    </View>
+
+                    <View style={styles.field}>
+                        <Text style={styles.label}>Maximum Players</Text>
+                        <View style={styles.pickerContainer}>
+                            <Picker
+                                selectedValue={maximumPlayers}
+                                onValueChange={(value) => setMaximumPlayers(value)}
+                                style={styles.picker}
+                                itemStyle={styles.pickerItem}
+                            >
+                                <Picker.Item label="5-a-side (10 players)" value={10} />
+                                <Picker.Item label="6-a-side (12 players)" value={12} />
+                                <Picker.Item label="7-a-side (14 players)" value={14} />
+                            </Picker>
+                        </View>
+                    </View>
+
+                    <View style={styles.field}>
+                        <Text style={styles.label}>Description</Text>
+                        <TextInput
+                            placeholder="(optional)"
+                            placeholderTextColor="#6B7280"
+                            value={description}
+                            onChangeText={setDescription}
+                            multiline
+                            style={[styles.input, styles.description]}
+                        />
+                    </View>
+
+                    <Pressable
+                        onPress={handleCreateMatch}
+                        disabled={loading}
+                        style={({ pressed }) => [
+                            styles.button,
+                            pressed && styles.buttonPressed,
+                            loading && styles.buttonDisabled,
+                        ]}
+                    >
+                        <Text style={styles.buttonText}>
+                            {loading ? "Creating..." : "Create Match"}
+                        </Text>
+                    </Pressable>
+                </ScrollView>
+            </KeyboardAvoidingView>
+        </SafeAreaView>
     );
 }
 
 const styles = StyleSheet.create({
     screen: {
         flex: 1,
-        backgroundColor: "#FFFFFF",
+        backgroundColor: "#F5F6F8",
     },
 
     container: {
         padding: 24,
+        paddingTop: 12,
         paddingBottom: 48,
     },
 
     title: {
         fontSize: 32,
         fontWeight: "bold",
+        color: "#111827",
         marginBottom: 28,
     },
 
@@ -180,7 +185,7 @@ const styles = StyleSheet.create({
     pickerContainer: {
         height: 78,
         borderWidth: 1,
-        borderColor: "#C7CDD4",
+        borderColor: "#D1D5DB",
         borderRadius: 10,
         overflow: "hidden",
         backgroundColor: "#FFFFFF",
@@ -209,7 +214,7 @@ const styles = StyleSheet.create({
     input: {
         minHeight: 54,
         borderWidth: 1,
-        borderColor: "#C7CDD4",
+        borderColor: "#D1D5DB",
         borderRadius: 10,
         paddingHorizontal: 14,
         paddingVertical: 14,
@@ -232,7 +237,7 @@ const styles = StyleSheet.create({
     button: {
         marginTop: 8,
         minHeight: 54,
-        backgroundColor: "#111827",
+        backgroundColor: "#FF7900",
         borderRadius: 10,
         alignItems: "center",
         justifyContent: "center",
@@ -249,6 +254,6 @@ const styles = StyleSheet.create({
     buttonText: {
         color: "#FFFFFF",
         fontSize: 16,
-        fontWeight: "600",
+        fontWeight: "700",
     },
 });

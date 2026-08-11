@@ -28,3 +28,11 @@ export type CreateMatchInput = {
     maximumPlayers: number;
     groupId: string;
 };
+
+export type UpdateMatchInput = {
+    title: string;
+    description?: string;
+    location: string;
+    matchDate: string;
+    maximumPlayers: number;
+};

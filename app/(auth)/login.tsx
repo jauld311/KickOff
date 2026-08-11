@@ -44,8 +44,9 @@ export default function LoginScreen() {
             style={styles.container}
             behavior={Platform.OS === "ios" ? "padding" : undefined}
         >
-            <View style={styles.form}>
+            <View style={styles.formCard}>
                 <Text style={styles.title}>Login</Text>
+                <Text style={styles.subtitle}>Find Your Game</Text>
 
                 <TextInput
                     value={email}
@@ -73,7 +74,7 @@ export default function LoginScreen() {
                     disabled={isSubmitting}
                     style={({ pressed }) => [
                         styles.button,
-                        pressed && styles.buttonPressed, 
+                        pressed && styles.buttonPressed,
                         isSubmitting && styles.buttonDisabled,
                     ]}
                 >
@@ -98,28 +99,51 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: "center",
         padding: 24,
+        backgroundColor: "#000000",
     },
 
-    form: {
+    formCard: {
         width: "100%",
-        gap: 16,
+        backgroundColor: "#FFFFFF",
+        borderRadius: 18,
+        padding: 24,
+
+        shadowColor: "#000000",
+        shadowOffset: {
+            width: 0,
+            height: 3,
+        },
+        shadowOpacity: 0.15,
+        shadowRadius: 8,
+        elevation: 4,
     },
 
     title: {
-        fontSize: 32,
+        fontSize: 34,
         fontWeight: "bold",
         textAlign: "center",
-        marginBottom: 8,
+        color: "#111827",
+    },
+
+    subtitle: {
+        fontSize: 16,
+        fontWeight: "600",
+        textAlign: "center",
+        color: "#FF7900",
+        marginTop: 4,
+        marginBottom: 24,
     },
 
     input: {
         minHeight: 52,
         borderWidth: 1,
-        borderColor: "#A1A1AA",
+        borderColor: "#D1D5DB",
         borderRadius: 10,
         paddingHorizontal: 16,
         fontSize: 16,
         color: "#111827",
+        backgroundColor: "#FFFFFF",
+        marginBottom: 16,
     },
 
     button: {
@@ -127,7 +151,8 @@ const styles = StyleSheet.create({
         alignItems: "center",
         justifyContent: "center",
         borderRadius: 10,
-        backgroundColor: "#111827",
+        backgroundColor: "#FF7900",
+        marginTop: 2,
     },
 
     buttonPressed: {
@@ -141,12 +166,14 @@ const styles = StyleSheet.create({
     buttonText: {
         color: "#FFFFFF",
         fontSize: 16,
-        fontWeight: "600",
+        fontWeight: "700",
     },
 
     link: {
-        marginTop: 8,
+        marginTop: 18,
         textAlign: "center",
         fontSize: 16,
+        fontWeight: "600",
+        color: "#FF7900",
     },
 });

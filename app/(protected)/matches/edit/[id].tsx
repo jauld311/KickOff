@@ -163,6 +163,8 @@ export default function EditMatchScreen() {
                     </View>
 
                     <View style={styles.field}>
+                        <Text style={styles.label}>Maximum players</Text>
+
                         <View style={styles.pickerContainer}>
                             <Picker
                                 selectedValue={maximumPlayers}
@@ -221,7 +223,7 @@ export default function EditMatchScreen() {
 const styles = StyleSheet.create({
     screen: {
         flex: 1,
-        backgroundColor: "#FFFFFF",
+        backgroundColor: "#F5F6F8",
     },
 
     centered: {
@@ -240,7 +242,7 @@ const styles = StyleSheet.create({
         fontSize: 32,
         fontWeight: "bold",
         color: "#111827",
-        marginBottom: 28,
+        marginBottom: 22,
     },
 
     field: {
@@ -257,7 +259,7 @@ const styles = StyleSheet.create({
     input: {
         minHeight: 54,
         borderWidth: 1,
-        borderColor: "#C7CDD4",
+        borderColor: "#D1D5DB",
         borderRadius: 10,
         paddingHorizontal: 14,
         paddingVertical: 14,
@@ -274,7 +276,7 @@ const styles = StyleSheet.create({
     pickerContainer: {
         height: 180,
         borderWidth: 1,
-        borderColor: "#C7CDD4",
+        borderColor: "#D1D5DB",
         borderRadius: 10,
         overflow: "hidden",
         justifyContent: "center",
@@ -298,7 +300,7 @@ const styles = StyleSheet.create({
         alignItems: "center",
         justifyContent: "center",
         borderRadius: 10,
-        backgroundColor: "#111827",
+        backgroundColor: "#FF7900",
         marginTop: 8,
     },
 

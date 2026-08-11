@@ -8,7 +8,9 @@ import {
   Text,
   View,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
+import { Ionicons } from "@expo/vector-icons";
 import { getAvailableGroups, getMyGroups } from "../../../services/groupService";
 import type { Group } from "../../../types/group";
 
@@ -66,132 +68,157 @@ export default function MyGroupsScreen() {
           pressed && styles.groupCardPressed,
         ]}
       >
-        <Text style={styles.groupName}>{item.name}</Text>
+        <View style={styles.groupCardContent}>
+          <View style={styles.groupIcon}>
+            <Ionicons
+              name="people-outline"
+              size={24}
+              color="#FF7900"
+            />
+          </View>
 
-        {item.description ? (
-          <Text
-            style={styles.groupDescription}
-            numberOfLines={2}
-          >
-            {item.description}
-          </Text>
-        ) : null}
 
-        <Text style={styles.viewText}>View group</Text>
+          <View style={styles.groupInfo}>
+            <Text style={styles.groupName}>
+              {item.name}
+            </Text>
+
+            {item.description ? (
+              <Text
+                style={styles.groupDescription}
+                numberOfLines={2}
+              >
+                {item.description}
+              </Text>
+            ) : (
+              <Text style={styles.groupDescription}>
+                No description
+              </Text>
+            )}
+          </View>
+
+          <Ionicons
+            name="chevron-forward"
+            size={22}
+            color="#6B7280"
+          />
+        </View>
       </Pressable>
     );
   }
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>My Groups</Text>
+    <SafeAreaView style={styles.screen} edges={["top"]}>
+      <View style={styles.container}>
+        <Text style={styles.title}>My Groups</Text>
 
-      <View style={styles.toggleContainer}>
-        <Pressable
-          onPress={() => setSelectedView("My Groups")}
-          style={[
-            styles.toggleButton,
-            selectedView === "My Groups" &&
-            styles.activeToggleButton,
-          ]}
-        >
-          <Text
+        <View style={styles.toggleContainer}>
+          <Pressable
+            onPress={() => setSelectedView("My Groups")}
             style={[
-              styles.toggleText,
+              styles.toggleButton,
               selectedView === "My Groups" &&
-              styles.activeToggleText,
+              styles.activeToggleButton,
             ]}
           >
-            My Groups
-          </Text>
-        </Pressable>
-
-        <Pressable
-          onPress={() => setSelectedView("Find a group")}
-          style={[
-            styles.toggleButton,
-            selectedView === "Find a group" &&
-            styles.activeToggleButton,
-          ]}
-        >
-          <Text
-            style={[
-              styles.toggleText,
-              selectedView === "Find a group" &&
-              styles.activeToggleText,
-            ]}
-          >
-            Find Groups
-          </Text>
-        </Pressable>
-      </View>
-
-      <Pressable
-        onPress={() => router.push("/create-group")}
-        style={({ pressed }) => [
-          styles.createButton,
-          pressed && styles.buttonPressed,
-        ]}
-      >
-        <Text style={styles.createButtonText}>Create Group</Text>
-      </Pressable>
-
-      {isLoading ? (
-        <View style={styles.messageContainer}>
-          <ActivityIndicator size="large" />
-          <Text style={styles.messageText}>
-            Loading groups...
-          </Text>
-        </View>
-      ) : errorMessage ? (
-        <View style={styles.messageContainer}>
-          <Text style={styles.errorText}>
-            {errorMessage}
-          </Text>
+            <Text
+              style={[
+                styles.toggleText,
+                selectedView === "My Groups" &&
+                styles.activeToggleText,
+              ]}
+            >
+              My Groups
+            </Text>
+          </Pressable>
 
           <Pressable
-            onPress={loadGroups}
-            style={styles.retryButton}
+            onPress={() => setSelectedView("Find a group")}
+            style={[
+              styles.toggleButton,
+              selectedView === "Find a group" &&
+              styles.activeToggleButton,
+            ]}
           >
-            <Text style={styles.retryButtonText}>
-              Try again
+            <Text
+              style={[
+                styles.toggleText,
+                selectedView === "Find a group" &&
+                styles.activeToggleText,
+              ]}
+            >
+              Find Groups
             </Text>
           </Pressable>
         </View>
-      ) : (
-        <FlatList
-          data={
-            selectedView === "My Groups"
-              ? groups
-              : availableGroups
-          }
-          keyExtractor={(item) => item.id}
-          renderItem={renderGroup}
-          contentContainerStyle={
-            groups.length === 0
-              ? styles.emptyList
-              : styles.listContent
-          }
-          onRefresh={loadGroups}
-          refreshing={isLoading}
-          ListEmptyComponent={
-            <View style={styles.messageContainer}>
-              <Text style={styles.emptyTitle}>
-                {selectedView === "My Groups"
-                  ? "No groups yet"
-                  : "No groups available"}
-              </Text>
 
-              <Text style={styles.messageText}>
-                {selectedView === "My Groups"
-                  ? "Create a group or join a group to see it here."
-                  : "There are currently no other groups to join."}
+        <Pressable
+          onPress={() => router.push("/create-group")}
+          style={({ pressed }) => [
+            styles.createButton,
+            pressed && styles.buttonPressed,
+          ]}
+        >
+          <Text style={styles.createButtonText}>Create Group</Text>
+        </Pressable>
+
+        {isLoading ? (
+          <View style={styles.messageContainer}>
+            <ActivityIndicator size="large" />
+            <Text style={styles.messageText}>
+              Loading groups...
+            </Text>
+          </View>
+        ) : errorMessage ? (
+          <View style={styles.messageContainer}>
+            <Text style={styles.errorText}>
+              {errorMessage}
+            </Text>
+
+            <Pressable
+              onPress={loadGroups}
+              style={styles.retryButton}
+            >
+              <Text style={styles.retryButtonText}>
+                Try again
               </Text>
-            </View>
-          }
-        />
-      )}
-    </View>
+            </Pressable>
+          </View>
+        ) : (
+          <FlatList
+            data={
+              selectedView === "My Groups"
+                ? groups
+                : availableGroups
+            }
+            keyExtractor={(item) => item.id}
+            renderItem={renderGroup}
+            contentContainerStyle={
+              groups.length === 0
+                ? styles.emptyList
+                : styles.listContent
+            }
+            onRefresh={loadGroups}
+            refreshing={isLoading}
+            ListEmptyComponent={
+              <View style={styles.messageContainer}>
+                <Text style={styles.emptyTitle}>
+                  {selectedView === "My Groups"
+                    ? "No groups yet"
+                    : "No groups available"}
+                </Text>
+
+                <Text style={styles.messageText}>
+                  {selectedView === "My Groups"
+                    ? "Create a group or join a group to see it here."
+                    : "There are currently no other groups to join."}
+                </Text>
+              </View>
+            }
+          />
+        )}
+      </View>
+    </SafeAreaView>
   );
 }
 
@@ -215,7 +242,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     borderRadius: 10,
-    backgroundColor: "#111827",
+    backgroundColor: "#FF7900",
     marginBottom: 20,
   },
 
@@ -243,30 +270,52 @@ const styles = StyleSheet.create({
     borderRadius: 14,
     padding: 18,
     marginBottom: 14,
+
+    shadowColor: "#000000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.06,
+    shadowRadius: 5,
+    elevation: 2,
   },
 
   groupCardPressed: {
     opacity: 0.75,
   },
 
+  groupCardContent: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+
+  groupIcon: {
+    width: 46,
+    height: 46,
+    borderRadius: 23,
+    backgroundColor: "#FFF3E8",
+    alignItems: "center",
+    justifyContent: "center",
+    marginRight: 14,
+  },
+
+  groupInfo: {
+    flex: 1,
+    marginRight: 10,
+  },
+
   groupName: {
     fontSize: 20,
     fontWeight: "700",
     color: "#111827",
-    marginBottom: 8,
   },
 
   groupDescription: {
-    fontSize: 15,
-    color: "#4B5563",
-    lineHeight: 21,
-    marginBottom: 12,
-  },
-
-  viewText: {
     fontSize: 14,
-    fontWeight: "700",
-    color: "#111827",
+    color: "#6B7280",
+    lineHeight: 20,
+    marginTop: 5,
   },
 
   messageContainer: {
@@ -318,12 +367,12 @@ const styles = StyleSheet.create({
   toggleButton: {
     flex: 1,
     alignItems: "center",
-    paddingVertical: 11,
+    paddingVertical: 12,
     borderRadius: 9,
   },
 
   activeToggleButton: {
-    backgroundColor: "#FFFFFF",
+    backgroundColor: "#FF7900",
   },
 
   toggleText: {
@@ -333,6 +382,11 @@ const styles = StyleSheet.create({
   },
 
   activeToggleText: {
-    color: "#111827",
+    color: "#FFFFFF",
+  },
+
+  screen: {
+    flex: 1,
+    backgroundColor: "#F5F6F8",
   },
 });

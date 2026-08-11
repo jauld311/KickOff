@@ -1,6 +1,8 @@
+import { Ionicons } from "@expo/vector-icons";
 import { router, useFocusEffect } from "expo-router";
 import { useCallback, useState } from "react";
 import { ActivityIndicator, FlatList, Pressable, StyleSheet, Text, View, } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 import { getCreatedMatches, getJoinedMatches, } from "../../../services/matchService";
 import type { Match, MatchWithCount } from "../../../types/match";
@@ -28,9 +30,9 @@ export default function MyMatchesScreen() {
             setMatches(results);
         } catch (error) {
             const message =
-            error instanceof Error
-                ? error.message
-                : "Unable to load matches.";
+                error instanceof Error
+                    ? error.message
+                    : "Unable to load matches.";
 
             setErrorMessage(message);
         } finally {
@@ -46,7 +48,7 @@ export default function MyMatchesScreen() {
 
     function formatMatchDate(matchDate: string) {
         const date = new Date(matchDate);
-        
+
         return date.toLocaleString("en-GB", {
             weekday: "short",
             day: "numeric",
@@ -61,11 +63,11 @@ export default function MyMatchesScreen() {
         return status.charAt(0).toUpperCase() + status.slice(1);
     }
 
-    function renderMatch({ item }: {item: MatchWithCount}) {
+    function renderMatch({ item }: { item: MatchWithCount }) {
         return (
             <Pressable
                 onPress={() => router.push({
-                    pathname: "/matches/[id]", 
+                    pathname: "/matches/[id]",
                     params: { id: item.id },
                 })
                 }
@@ -75,36 +77,47 @@ export default function MyMatchesScreen() {
                 ]}
             >
                 <View style={styles.cardHeader}>
-                    <Text style={styles.matchTitle}>
+                    <Text
+                        style={styles.matchTitle}
+                        numberOfLines={1}
+                    >
                         {item.title}
                     </Text>
 
-                    <View
-                        style={[
-                            styles.statusBadge,
-                            item.status === "cancelled" &&
-                                styles.cancelledBadge,
-                            item.status === "full" &&
-                                styles.fullBadge,
-                        ]}
-                    >
-                        <Text style={styles.statusText}>
-                            {formatStatus(item.status)}
-                        </Text>
-                    </View>
+                    <Text style={styles.playerCount}>
+                        {item.participant_count}/{item.maximum_players}
+                    </Text>
                 </View>
 
-                <Text style={styles.matchDetail}>
-                    {item.location}
-                </Text>
+                <View style={styles.detailRow}>
+                    <View style={styles.iconContainer}>
+                        <Ionicons
+                            name="location-outline"
+                            size={18}
+                            color="#FF7900"
+                        />
+                    </View>
 
-                <Text style={styles.matchDetail}>
-                    {formatMatchDate(item.match_date)}
-                </Text>
+                    <Text style={styles.matchDetail}>
+                        {item.location}
+                    </Text>
+                </View>
 
-                <Text style={styles.matchDetail}>
-                    Players: {item.participant_count}/{item.maximum_players}
-                </Text>
+                <View style={styles.detailRow}>
+                    <View style={styles.iconContainer}>
+                        <Ionicons
+                            name="calendar-outline"
+                            size={18}
+                            color="FF7900"
+                        />
+                    </View>
+
+                    <View style={{ width: 0 }} />
+
+                    <Text style={styles.matchDetail}>
+                        {formatMatchDate(item.match_date)}
+                    </Text>
+                </View>
 
                 {item.description ? (
                     <Text
@@ -113,104 +126,128 @@ export default function MyMatchesScreen() {
                     >
                         {item.description}
                     </Text>
-                ): null}
+                ) : null}
 
+                <View style={styles.bottomRow}>
+
+                    <View
+                        style={[
+                            styles.statusBadge,
+                            item.status === "open" && styles.openBadge,
+                            item.status === "full" && styles.fullBadge,
+                            item.status === "cancelled" && styles.cancelledBadge,
+                        ]}
+                    >
+                        <Text
+                            style={[
+                                styles.statusText,
+                                item.status === "open" && styles.openStatusText,
+                                item.status === "full" && styles.fullStatusText,
+                                item.status === "cancelled" && styles.cancelledStatusText,
+                            ]}
+                        >
+                            {formatStatus(item.status)}
+                        </Text>
+                    </View>
+                </View>
             </Pressable>
         );
     }
 
     return (
-        <View style={styles.container}>
-            <Text style={styles.title}>My Matches</Text>
+        <SafeAreaView style={styles.screen} edges={["top"]}>
+            <View style={styles.container}>
+                <Text style={styles.title}>My Matches</Text>
 
-            <View style={styles.toggleContainer}>
-                <Pressable
-                    onPress={() => setSelectedView("created")}
-                    style={[
-                        styles.toggleButton,
-                        selectedView === "created" &&
-                            styles.activeToggleButton,
-                    ]}
-                >
-                    <Text
+                <View style={styles.toggleContainer}>
+                    <Pressable
+                        onPress={() => setSelectedView("created")}
                         style={[
-                            styles.toggleText,
+                            styles.toggleButton,
                             selectedView === "created" &&
-                                styles.activeToggleText,
-                        ]}
-                    >
-                        Created
-                    </Text>
-                </Pressable>
-
-                <Pressable
-                    onPress={() => setSelectedView("joined")}
-                    style={[
-                        styles.toggleButton,
-                        selectedView === "joined" &&
                             styles.activeToggleButton,
-                    ]}
-                >
-                    <Text
-                        style={[
-                            styles.toggleText,
-                            selectedView === "joined" &&
-                                styles.activeToggleText,
                         ]}
                     >
-                        Joined
-                    </Text>
-                </Pressable>
-            </View>
-
-            {isLoading ? (
-                <View style={styles.messageContainer}>
-                    <ActivityIndicator size="large" />
-                    <Text style={styles.messageText}>
-                        Loading matches...
-                    </Text>
-                </View>
-            ) : errorMessage ? (
-                <View style={styles.messageContainer}>
-                    <Text style={styles.errorText}>
-                        {errorMessage}
-                    </Text>
+                        <Text
+                            style={[
+                                styles.toggleText,
+                                selectedView === "created" &&
+                                styles.activeToggleText,
+                            ]}
+                        >
+                            Created
+                        </Text>
+                    </Pressable>
 
                     <Pressable
-                        onPress={loadMatches}
-                        style={styles.retryButton}
+                        onPress={() => setSelectedView("joined")}
+                        style={[
+                            styles.toggleButton,
+                            selectedView === "joined" &&
+                            styles.activeToggleButton,
+                        ]}
                     >
-                        <Text style={styles.retryButtonText}>
-                            Try again
+                        <Text
+                            style={[
+                                styles.toggleText,
+                                selectedView === "joined" &&
+                                styles.activeToggleText,
+                            ]}
+                        >
+                            Joined
                         </Text>
                     </Pressable>
                 </View>
-            ) : (
-                <FlatList
-                    data={matches}
-                    keyExtractor={(item) => item.id}
-                    renderItem={renderMatch}
-                    contentContainerStyle={
-                        matches.length === 0
-                            ? styles.emptyList
-                            : styles.listContent
-                    }
-                    ListEmptyComponent={
-                        <View style={styles.messageContainer}>
-                            <Text style={styles.emptyTitle}>
-                                No {selectedView} matches
-                            </Text>
 
-                            <Text style={styles.messageText}>
-                                {selectedView === "created"
-                                ? "Matches you create will appear here."
-                                : "Matches you join will appear here." }
+                {isLoading ? (
+                    <View style={styles.messageContainer}>
+                        <ActivityIndicator size="large" />
+                        <Text style={styles.messageText}>
+                            Loading matches...
+                        </Text>
+                    </View>
+                ) : errorMessage ? (
+                    <View style={styles.messageContainer}>
+                        <Text style={styles.errorText}>
+                            {errorMessage}
+                        </Text>
+
+                        <Pressable
+                            onPress={loadMatches}
+                            style={styles.retryButton}
+                        >
+                            <Text style={styles.retryButtonText}>
+                                Try again
                             </Text>
-                        </View>
-                    }
-                />
-            )}
-        </View>
+                        </Pressable>
+                    </View>
+                ) : (
+                    <FlatList
+                        data={matches}
+                        keyExtractor={(item) => item.id}
+                        renderItem={renderMatch}
+                        contentContainerStyle={
+                            matches.length === 0
+                                ? styles.emptyList
+                                : styles.listContent
+                        }
+                        ListEmptyComponent={
+                            <View style={styles.messageContainer}>
+                                <Text style={styles.emptyTitle}>
+                                    No {selectedView} matches
+                                </Text>
+
+                                <Text style={styles.messageText}>
+                                    {selectedView === "created"
+                                        ? "Matches you create will appear here."
+                                        : "Matches you join will appear here."}
+                                </Text>
+                            </View>
+                        }
+                    />
+                )}
+            </View>
+        </SafeAreaView>
     );
 }
 
@@ -225,12 +262,13 @@ const styles = StyleSheet.create({
     title: {
         fontSize: 30,
         fontWeight: "bold",
+        color: "#111827",
         marginBottom: 20,
     },
 
     toggleContainer: {
         flexDirection: "row",
-        backgroundColor: "#e3e3e3",
+        backgroundColor: "#E5E7EB",
         borderRadius: 12,
         padding: 4,
         marginBottom: 20,
@@ -244,17 +282,17 @@ const styles = StyleSheet.create({
     },
 
     activeToggleButton: {
-        backgroundColor: "#ffffff",
+        backgroundColor: "#FF7900",
     },
 
     toggleText: {
         fontSize: 16,
         fontWeight: "600",
-        color: "#666666",
+        color: "#6B7280",
     },
 
     activeToggleText: {
-        color: "#111111",
+        color: "#FFFFFF",
     },
 
     listContent: {
@@ -276,7 +314,7 @@ const styles = StyleSheet.create({
             width: 0,
             height: 2,
         },
-        shadowOpacity: 0.08,
+        shadowOpacity: 0.06,
         shadowRadius: 5,
         elevation: 2,
     },
@@ -288,30 +326,40 @@ const styles = StyleSheet.create({
     cardHeader: {
         flexDirection: "row",
         justifyContent: "space-between",
-        alignItems: "flex-start",
+        alignItems: "center",
         gap: 12,
         marginBottom: 12,
     },
 
     matchTitle: {
         flex: 1,
-        fontSize: 19,
-        fontWeight: "bold",
+        fontSize: 21,
+        fontWeight: "700",
+        color: "#111827"
+    },
+
+    playerCount: {
+        fontSize: 21,
+        fontWeight: "700",
+        color: "#111827"
+    },
+
+    detailRow: {
+        flexDirection: "row",
+        alignItems: "center",
+        marginBottom: 8,
+    },
+
+    iconContainer: {
+        width: 28,
+        alignItems: "center",
+        marginRight: 6,
     },
 
     statusBadge: {
-        backgroundColor: "#d8f3dc",
+        paddingHorizontal: 12,
+        paddingVertical: 6,
         borderRadius: 20,
-        paddingHorizontal: 10,
-        paddingVertical: 5,
-    },
-
-    fullBadge: {
-        backgroundColor: "#fff0c2",
-    },
-
-    cancelledBadge: {
-        backgroundColor: "#ffd6d6",
     },
 
     statusText: {
@@ -320,16 +368,23 @@ const styles = StyleSheet.create({
     },
 
     matchDetail: {
+        flex: 1,
         fontSize: 15,
-        color: "#444444",
-        marginBottom: 6,
+        color: "#4B5563",
     },
 
     description: {
         fontSize: 14,
-        color: "#666666",
+        color: "#6B7280",
         marginTop: 8,
         lineHeight: 20,
+    },
+
+    bottomRow: {
+        marginTop: 14,
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "center",
     },
 
     messageContainer: {
@@ -368,4 +423,34 @@ const styles = StyleSheet.create({
         color: "#ffffff",
         fontWeight: "bold",
     },
+
+    screen: {
+        flex: 1,
+        backgroundColor: "#F5F6F8",
+    },
+
+    openBadge: {
+        backgroundColor: "#DCFCE7"
+    },
+
+    openStatusText: {
+        color: "#166534",
+    },
+
+    fullBadge: {
+        backgroundColor: "#FEF3C7",
+    },
+
+    fullStatusText: {
+        color: "#92400E",
+    },
+
+    cancelledBadge: {
+        backgroundColor: "#FEE2E2",
+    },
+
+    cancelledStatusText: {
+        color: "#DC2626",
+    },
+
 });

@@ -454,8 +454,8 @@ export default function GroupDetailsScreen() {
         } catch (error) {
             const message =
                 error instanceof Error
-                ? error.message
-                : "Unable to update the match feed.";
+                    ? error.message
+                    : "Unable to update the match feed.";
 
             Alert.alert("Update failed", message);
         } finally {
@@ -614,10 +614,10 @@ export default function GroupDetailsScreen() {
                                                 >
                                                     <Text style={styles.feedMatchButtonText}>
                                                         {updatingFeedMatchId === match.id
-                                                        ? "Updating..."
-                                                        : match.is_posted
-                                                            ? "Remove from Feed"
-                                                            : "Post to Feed"}
+                                                            ? "Updating..."
+                                                            : match.is_posted
+                                                                ? "Remove from Feed"
+                                                                : "Post to Feed"}
                                                     </Text>
                                                 </Pressable>
                                             ) : null}
@@ -688,29 +688,30 @@ export default function GroupDetailsScreen() {
                                             key={post.id}
                                             style={styles.postCard}
                                         >
+                                            <View style={styles.postHeader}>
+                                                <Text style={styles.postAuthor}>
+                                                    {post.author.username}
+                                                </Text>
 
-                                            {canManageGroup ? (
-                                                <Pressable
-                                                    onPress={() => handleDeletePost(post.id)}
-                                                    disabled={deletingPostId === post.id}
-                                                    style={({ pressed }) => [
-                                                        styles.deletePostButton,
-                                                        pressed && styles.buttonPressed,
-                                                        deletingPostId === post.id &&
-                                                        styles.buttonDisabled,
-                                                    ]}
-                                                >
-                                                    <Text style={styles.deletePostText}>
-                                                        {deletingPostId === post.id
-                                                            ? "Deleting..."
-                                                            : "Delete"}
-                                                    </Text>
-                                                </Pressable>
-                                            ) : null}
-
-                                            <Text style={styles.postAuthor}>
-                                                {post.author.username}
-                                            </Text>
+                                                {canManageGroup ? (
+                                                    <Pressable
+                                                        onPress={() => handleDeletePost(post.id)}
+                                                        disabled={deletingPostId === post.id}
+                                                        style={({ pressed }) => [
+                                                            styles.deletePostButton,
+                                                            pressed && styles.buttonPressed,
+                                                            deletingPostId === post.id &&
+                                                            styles.buttonDisabled,
+                                                        ]}
+                                                    >
+                                                        <Text style={styles.deletePostText}>
+                                                            {deletingPostId === post.id
+                                                                ? "Deleting..."
+                                                                : "Delete"}
+                                                        </Text>
+                                                    </Pressable>
+                                                ) : null}
+                                            </View>
 
                                             <Text style={styles.postContent}>
                                                 {post.content}
@@ -976,6 +977,15 @@ const styles = StyleSheet.create({
         borderRadius: 14,
         padding: 18,
         marginBottom: 14,
+
+        shadowColor: "#000000",
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.05,
+        shadowRadius: 5,
+        elevation: 2,
     },
 
     sectionTitle: {
@@ -995,7 +1005,7 @@ const styles = StyleSheet.create({
         minHeight: 52,
         alignItems: "center",
         justifyContent: "center",
-        backgroundColor: "#111827",
+        backgroundColor: "#FF7900",
         borderRadius: 10,
         marginTop: 16,
     },
@@ -1011,10 +1021,12 @@ const styles = StyleSheet.create({
     },
 
     matchCard: {
-        backgroundColor: "#F5F6F8",
-        borderRadius: 10,
+        backgroundColor: "#F9FAFB",
+        borderRadius: 12,
         padding: 14,
         marginTop: 12,
+        borderWidth: 1,
+        borderColor: "#E5E7EB"
     },
 
     matchHeader: {
@@ -1047,9 +1059,9 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         justifyContent: "space-between",
         alignItems: "center",
-        paddingVertical: 12,
+        paddingVertical: 13,
         borderBottomWidth: 1,
-        borderBottomColor: "#E5E7EB",
+        borderBottomColor: "#F0F1F3",
     },
 
     memberName: {
@@ -1179,12 +1191,21 @@ const styles = StyleSheet.create({
         padding: 16,
         backgroundColor: "#F9FAFB",
         borderRadius: 10,
+        borderWidth: 1,
+        borderColor: "#E5E7EB"
     },
 
     postAuthor: {
         fontWeight: "700",
         fontSize: 15,
         color: "#111827",
+    },
+
+    postHeader: {
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "center",
+        gap: 12,
     },
 
     postContent: {
@@ -1222,7 +1243,7 @@ const styles = StyleSheet.create({
         alignItems: "center",
         justifyContent: "center",
         borderRadius: 8,
-        backgroundColor: "#111827",
+        backgroundColor: "#FF7900",
         marginTop: 10,
     },
 
@@ -1233,18 +1254,16 @@ const styles = StyleSheet.create({
     },
 
     deletePostButton: {
-        alignSelf: "flex-start",
-        marginTop: 12,
         paddingHorizontal: 12,
-        paddingVertical: 7,
+        paddingVertical: 5,
         borderWidth: 1,
         borderColor: "#B91C1C",
-        borderRadius: 8,
+        borderRadius: 7,
     },
 
     deletePostText: {
         color: "#B91C1C",
-        fontSize: 13,
+        fontSize: 12,
         fontWeight: "700",
     },
 
@@ -1269,6 +1288,7 @@ const styles = StyleSheet.create({
 
     commentRow: {
         paddingVertical: 10,
+        paddingHorizontal: 2,
         borderBottomWidth: 1,
         borderBottomColor: "#E5E7EB",
     },
@@ -1313,7 +1333,7 @@ const styles = StyleSheet.create({
         marginTop: 8,
         alignItems: "center",
         justifyContent: "center",
-        backgroundColor: "#111827",
+        backgroundColor: "#FF7900",
         borderRadius: 8,
     },
 
@@ -1340,12 +1360,12 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         borderRadius: 8,
         borderWidth: 1,
-        borderColor: "#111827",
+        borderColor: "#FF7900",
         marginTop: 14,
     },
 
     viewMatchButtonText: {
-        color: "#111827",
+        color: "#FF7900",
         fontSize: 14,
         fontWeight: "700",
     },
@@ -1355,7 +1375,7 @@ const styles = StyleSheet.create({
         alignItems: "center",
         justifyContent: "center",
         borderRadius: 8,
-        backgroundColor: "#111827",
+        backgroundColor: "#FF7900",
         marginTop: 10,
     },
 
