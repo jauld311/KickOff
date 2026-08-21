@@ -34,6 +34,28 @@ export default function RegisterScreen() {
             return;
         }
 
+        const { data: existingUsername, error: usernameError } = await supabase
+            .from("profiles")
+            .select("id")
+            .ilike("username", trimmedUsername)
+            .maybeSingle();
+
+        if (usernameError) {
+            Alert.alert(
+                "Registration failed",
+                "Unable to check username availability. Please try again."
+            );
+            return;
+        }
+
+        if (existingUsername) {
+            Alert.alert(
+                "Username unavailable",
+                "That username is already taken. Please choose another."
+            );
+            return;
+        }
+
         try {
             setIsSubmitting(true);
 

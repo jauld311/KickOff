@@ -7,6 +7,8 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { getPostedMatches } from "../../../services/matchService";
 import type { Match, MatchWithCount } from "../../../types/match";
 
+import { getPlayersNeeded } from "../../../utils/matchUtils";
+
 export default function MatchesScreen() {
     const [matches, setMatches] = useState<MatchWithCount[]>([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -56,7 +58,10 @@ export default function MatchesScreen() {
 
     function renderMatch({ item }: { item: MatchWithCount }) {
 
-        const playersNeeded = item.maximum_players - item.participant_count;
+        const playersNeeded = getPlayersNeeded(
+            item.participant_count,
+            item.maximum_players
+        );
 
         return (
             <Pressable

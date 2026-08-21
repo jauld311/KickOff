@@ -1,5 +1,5 @@
 import { supabase } from "../lib/supabase";
-import { CreateGroupPostInput, GroupPost, GroupPostComment, CreateGroupCommentInput } from "../types/groupPost";
+import { CreateGroupCommentInput, CreateGroupPostInput, GroupPost, GroupPostComment } from "../types/groupPost";
 
 async function getCurrentUserId() {
     const {
@@ -31,7 +31,7 @@ export async function getGroupPosts(
         });
 
     if (error) {
-        throw error;
+        throw new Error(error.message);
     }
 
     return data as GroupPost[];
@@ -51,7 +51,7 @@ export async function createGroupPost(
         });
 
     if (error) {
-        throw error;
+        throw new Error(error.message);
     }
 }
 
@@ -64,7 +64,7 @@ export async function deleteGroupPost(
         .eq("id", postId);
 
     if (error) {
-        throw error;
+        throw new Error(error.message);
     }
 }
 
@@ -86,7 +86,7 @@ export async function getPostComments(
         });
 
     if (error) {
-        throw error;
+        throw new Error(error.message);
     }
 
     return (data ?? []) as GroupPostComment[];
@@ -110,7 +110,7 @@ export async function createPostComment(
         });
 
     if (error) {
-        throw error;
+        throw new Error(error.message);
     }
 }
 
@@ -123,6 +123,6 @@ export async function deletePostComment(
         .eq("id", commentId);
 
     if (error) {
-        throw error;
+        throw new Error(error.message);
     }
 }

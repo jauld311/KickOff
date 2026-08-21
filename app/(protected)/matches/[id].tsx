@@ -1,6 +1,6 @@
 import { router, useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
-import { ActivityIndicator, Alert, Pressable, StyleSheet, Text, View } from "react-native";
+import { ActivityIndicator, Alert, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import {
@@ -236,228 +236,240 @@ export default function MatchDetailsScreen() {
     return (
 
         <SafeAreaView style={styles.container}>
+            <ScrollView
+                contentContainerStyle={styles.container}
+                showsVerticalScrollIndicator={false}
+            >
 
-            <View style={styles.header}>
-                <Text style={styles.title}>{match.title}</Text>
+                <View style={styles.header}>
+                    <Text style={styles.title}>{match.title}</Text>
 
-                <View
-                    style={[
-                        styles.statusBadge,
-                        match.status === "cancelled" && styles.cancelledStatusBadge,
-                    ]}
-                >
-                    <Text
+                    <View
                         style={[
-                            styles.statusText,
-                            match.status === "cancelled" &&
-                            styles.cancelledStatusText,
+                            styles.statusBadge,
+                            match.status === "full" && styles.fullStatusBadge,
+                            match.status === "cancelled" && styles.cancelledStatusBadge,
                         ]}
                     >
-                        {match.status.charAt(0).toUpperCase() + match.status.slice(1)}
-                    </Text>
-                </View>
-            </View>
-
-            <View style={styles.card}>
-                <View style={styles.detailItem}>
-                    <View style={styles.detailIcon}>
-                        <Ionicons
-                            name="location-outline"
-                            size={22}
-                            color="#FF7900"
-                        />
-                    </View>
-
-                    <View style={styles.detailContent}>
-                        <Text style={styles.label}>Location</Text>
-                        <Text style={styles.value}>{match.location}</Text>
-                    </View>
-                </View>
-
-                <View style={styles.divider} />
-
-                <View style={styles.detailItem}>
-                    <View style={styles.detailIcon}>
-                        <Ionicons
-                            name="calendar-outline"
-                            size={22}
-                            color="#FF7900"
-                        />
-                    </View>
-
-                    <View style={styles.detailContent}>
-                        <Text style={styles.label}>Date and time</Text>
-
-                        <Text style={styles.value}>
-                            {new Date(match.match_date).toLocaleString("en-GB", {
-                                weekday: "long",
-                                day: "numeric",
-                                month: "long",
-                                year: "numeric",
-                                hour: "2-digit",
-                                minute: "2-digit",
-                            })}
+                        <Text
+                            style={[
+                                styles.statusText,
+                                match.status === "full" && styles.fullStatusText,
+                                match.status === "cancelled" &&
+                                styles.cancelledStatusText,
+                            ]}
+                        >
+                            {match.status.charAt(0).toUpperCase() + match.status.slice(1)}
                         </Text>
                     </View>
                 </View>
 
-                <View style={styles.divider} />
+                <View style={styles.card}>
+                    <View style={styles.detailItem}>
+                        <View style={styles.detailIcon}>
+                            <Ionicons
+                                name="location-outline"
+                                size={22}
+                                color="#FF7900"
+                            />
+                        </View>
 
-                <View style={styles.detailItem}>
-                    <View style={styles.detailIcon}>
-                        <Ionicons
-                            name="people-outline"
-                            size={22}
-                            color="#FF7900"
-                        />
+                        <View style={styles.detailContent}>
+                            <Text style={styles.label}>Location</Text>
+                            <Text style={styles.value}>{match.location}</Text>
+                        </View>
                     </View>
 
-                    <View style={styles.detailContent}>
-                        <Text style={styles.label}>Players</Text>
+                    <View style={styles.divider} />
 
-                        <Text style={styles.playerCount}>
-                            {match.participant_count}/{match.maximum_players}
-                        </Text>
+                    <View style={styles.detailItem}>
+                        <View style={styles.detailIcon}>
+                            <Ionicons
+                                name="calendar-outline"
+                                size={22}
+                                color="#FF7900"
+                            />
+                        </View>
+
+                        <View style={styles.detailContent}>
+                            <Text style={styles.label}>Date and time</Text>
+
+                            <Text style={styles.value}>
+                                {new Date(match.match_date).toLocaleString("en-GB", {
+                                    weekday: "long",
+                                    day: "numeric",
+                                    month: "long",
+                                    year: "numeric",
+                                    hour: "2-digit",
+                                    minute: "2-digit",
+                                })}
+                            </Text>
+                        </View>
                     </View>
+
+                    <View style={styles.divider} />
+
+                    <View style={styles.detailItem}>
+                        <View style={styles.detailIcon}>
+                            <Ionicons
+                                name="people-outline"
+                                size={22}
+                                color="#FF7900"
+                            />
+                        </View>
+
+                        <View style={styles.detailContent}>
+                            <Text style={styles.label}>Players</Text>
+
+                            <Text style={styles.playerCount}>
+                                {match.participant_count}/{match.maximum_players}
+                            </Text>
+                        </View>
+                    </View>
+
+                    {match.description ? (
+                        <View style={styles.descriptionCard}>
+                            <Text style={styles.sectionTitle}>Description</Text>
+                            <Text style={styles.description}>
+                                {match.description}
+                            </Text>
+                        </View>
+                    ) : null}
+
                 </View>
 
-                {match.description ? (
-                    <View style={styles.descriptionCard}>
-                        <Text style={styles.sectionTitle}>Description</Text>
-                        <Text style={styles.description}>
-                            {match.description}
-                        </Text>
+                {/* PLAYER / PARTICIPATION ACTION */}
+                {!isCreator ? (
+                    isCancelled ? (
+                        <Pressable
+                            disabled
+                            style={[
+                                styles.actionButton,
+                                styles.disabledActionButton,
+                            ]}
+                        >
+                            <Text style={styles.actionButtonText}>
+                                Match Cancelled
+                            </Text>
+                        </Pressable>
+                    ) : hasJoined ? (
+                        <Pressable
+                            onPress={handleParticipation}
+                            disabled={isUpdatingParticipation}
+                            style={({ pressed }) => [
+                                styles.actionButton,
+                                styles.leaveButton,
+                                pressed && styles.buttonPressed,
+                                isUpdatingParticipation && styles.buttonDisabled,
+                            ]}
+                        >
+                            <Text style={styles.actionButtonText}>
+                                {isUpdatingParticipation
+                                    ? "Leaving..."
+                                    : "Leave Match"}
+                            </Text>
+                        </Pressable>
+                    ) : isFull ? (
+                        <Pressable
+                            disabled
+                            style={[
+                                styles.actionButton,
+                                styles.disabledActionButton,
+                            ]}
+                        >
+                            <Text style={styles.actionButtonText}>
+                                Match Full
+                            </Text>
+                        </Pressable>
+                    ) : (
+                        <Pressable
+                            onPress={handleParticipation}
+                            disabled={isUpdatingParticipation}
+                            style={({ pressed }) => [
+                                styles.actionButton,
+                                pressed && styles.buttonPressed,
+                                isUpdatingParticipation && styles.buttonDisabled,
+                            ]}
+                        >
+                            <Text style={styles.actionButtonText}>
+                                {isUpdatingParticipation
+                                    ? "Joining..."
+                                    : "Join Match"}
+                            </Text>
+                        </Pressable>
+                    )
+                ) : null}
+
+                {isCreator ? (
+                    <View>
+                        <Pressable
+                            onPress={() =>
+                                router.push({
+                                    pathname: "/matches/edit/[id]",
+                                    params: { id: match.id },
+                                })
+                            }
+                            style={({ pressed }) => [
+                                styles.editButton,
+                                pressed && styles.buttonPressed,
+                            ]}
+                        >
+                            <Text style={styles.editButtonText}>
+                                Edit Match
+                            </Text>
+                        </Pressable>
+
+                        {match.status !== "cancelled" ? (
+                            <Pressable
+                                onPress={handleCancelMatch}
+                                disabled={isCancelling}
+                                style={({ pressed }) => [
+                                    styles.cancelButton,
+                                    pressed && styles.buttonPressed,
+                                    isCancelling && styles.buttonDisabled,
+                                ]}
+                            >
+                                <Text style={styles.cancelButtonText}>
+                                    {isCancelling
+                                        ? "Cancelling..."
+                                        : "Cancel Match"}
+                                </Text>
+                            </Pressable>
+                        ) : null}
+
+                        <Pressable
+                            onPress={handleDeleteMatch}
+                            disabled={isDeleting}
+                            style={({ pressed }) => [
+                                styles.deleteButton,
+                                pressed && styles.buttonPressed,
+                                isDeleting && styles.buttonDisabled,
+                            ]}
+                        >
+                            <Text style={styles.deleteButtonText}>
+                                {isDeleting
+                                    ? "Deleting..."
+                                    : "Delete Match"}
+                            </Text>
+                        </Pressable>
                     </View>
                 ) : null}
 
-            </View>
-
-            {/* PLAYER / PARTICIPATION ACTION */}
-            {!isCreator ? (
-                isCancelled ? (
-                    <Pressable
-                        disabled
-                        style={[
-                            styles.actionButton,
-                            styles.disabledActionButton,
-                        ]}
-                    >
-                        <Text style={styles.actionButtonText}>
-                            Match Cancelled
-                        </Text>
-                    </Pressable>
-                ) : hasJoined ? (
-                    <Pressable
-                        onPress={handleParticipation}
-                        disabled={isUpdatingParticipation}
-                        style={({ pressed }) => [
-                            styles.actionButton,
-                            styles.leaveButton,
-                            pressed && styles.buttonPressed,
-                            isUpdatingParticipation && styles.buttonDisabled,
-                        ]}
-                    >
-                        <Text style={styles.actionButtonText}>
-                            {isUpdatingParticipation
-                                ? "Leaving..."
-                                : "Leave Match"}
-                        </Text>
-                    </Pressable>
-                ) : isFull ? (
-                    <Pressable
-                        disabled
-                        style={[
-                            styles.actionButton,
-                            styles.disabledActionButton,
-                        ]}
-                    >
-                        <Text style={styles.actionButtonText}>
-                            Match Full
-                        </Text>
-                    </Pressable>
-                ) : (
-                    <Pressable
-                        onPress={handleParticipation}
-                        disabled={isUpdatingParticipation}
-                        style={({ pressed }) => [
-                            styles.actionButton,
-                            pressed && styles.buttonPressed,
-                            isUpdatingParticipation && styles.buttonDisabled,
-                        ]}
-                    >
-                        <Text style={styles.actionButtonText}>
-                            {isUpdatingParticipation
-                                ? "Joining..."
-                                : "Join Match"}
-                        </Text>
-                    </Pressable>
-                )
-            ) : null}
-
-            {isCreator ? (
-                <View>
-                    <Pressable
-                        onPress={() =>
-                            router.push({
-                                pathname: "/matches/edit/[id]",
-                                params: { id: match.id },
-                            })
-                        }
-                        style={({ pressed }) => [
-                            styles.editButton,
-                            pressed && styles.buttonPressed,
-                        ]}
-                    >
-                        <Text style={styles.editButtonText}>
-                            Edit Match
-                        </Text>
-                    </Pressable>
-
-                    {match.status !== "cancelled" ? (
-                        <Pressable
-                            onPress={handleCancelMatch}
-                            disabled={isCancelling}
-                            style={({ pressed }) => [
-                                styles.cancelButton,
-                                pressed && styles.buttonPressed,
-                                isCancelling && styles.buttonDisabled,
-                            ]}
-                        >
-                            <Text style={styles.cancelButtonText}>
-                                {isCancelling
-                                    ? "Cancelling..."
-                                    : "Cancel Match"}
-                            </Text>
-                        </Pressable>
-                    ) : null}
-
-                    <Pressable
-                        onPress={handleDeleteMatch}
-                        disabled={isDeleting}
-                        style={({ pressed }) => [
-                            styles.deleteButton,
-                            pressed && styles.buttonPressed,
-                            isDeleting && styles.buttonDisabled,
-                        ]}
-                    >
-                        <Text style={styles.deleteButtonText}>
-                            {isDeleting
-                                ? "Deleting..."
-                                : "Delete Match"}
-                        </Text>
-                    </Pressable>
-                </View>
-            ) : null}
-
+            </ScrollView>
         </SafeAreaView>
     );
 }
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
         paddingHorizontal: 24,
-        backgroundColor: "#F5F6F8"
+        paddingTop: 12,
+        paddingBottom: 60,
+    },
+
+    screen: {
+        flex: 1,
+        backgroundColor: "#FFFFFF",
     },
 
     centered: {
@@ -493,6 +505,14 @@ const styles = StyleSheet.create({
         fontSize: 13,
         fontWeight: "700",
         color: "#166534",
+    },
+
+    fullStatusBadge: {
+        backgroundColor: "#FEF3C7",
+    },
+
+    fullStatusText: {
+        color: "#92400E",
     },
 
     card: {

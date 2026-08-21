@@ -1,5 +1,6 @@
 import { supabase } from "../lib/supabase";
 import { CreateMatchInput, Match, MatchWithCount, UpdateMatchInput } from "../types/match";
+import { getMatchStatus } from "../utils/matchUtils";
 
 async function getCurrentUserId() {
     const {
@@ -19,10 +20,18 @@ async function getCurrentUserId() {
 }
 
 function mapMatchWithCount(match: any): MatchWithCount {
-    return {
+    
+        const participantCount =
+            match.match_participants?.[0]?.count ?? 0;
+        
+        return {
         ...match,
-        participant_count:
-            match.match_participants?.[0]?.count ?? 0,
+        participant_count: participantCount,
+        status: getMatchStatus(
+            match.status,
+            participantCount,
+            match.maximum_players
+        ),
     };
 }
 
@@ -69,7 +78,7 @@ export async function getCreatedMatches(): Promise<MatchWithCount[]> {
 
     const { data, error } = await supabase
         .from("matches")
-        .select(`*
+        .select(`
             *,
             match_participants(count)
             `)
@@ -80,7 +89,7 @@ export async function getCreatedMatches(): Promise<MatchWithCount[]> {
         throw new Error(error.message);
     }
 
-    return (data ?? []).map(mapMatchWithCount);;
+    return (data ?? []).map(mapMatchWithCount);
 }
 
 export async function getJoinedMatches(): Promise<MatchWithCount[]> {
@@ -312,10 +321,10 @@ export async function hasJoinedMatch(
 
 export async function getMatchesByGroup(
     groupId: string
-) : Promise<MatchWithCount[]> {
-        const { data, error } = await supabase
-            .from("matches")
-            .select(`
+): Promise<MatchWithCount[]> {
+    const { data, error } = await supabase
+        .from("matches")
+        .select(`
             *,
             match_participants(count)
         `)
@@ -327,4 +336,44 @@ export async function getMatchesByGroup(
     }
 
     return (data ?? []).map(mapMatchWithCount);
+}
+
+async function updateMatchCapacityStatus(matchId: string) {
+    const { data, error } = await supabase
+        .from("matches")
+        .select(`
+            id,
+            status,
+            maximum_players,
+            match_participants(count)
+        `)
+        .eq("id", matchId)
+        .single();
+
+    if (error) {
+        throw new Error(error.message);
+    }
+
+    if (data.status === "cancelled") {
+        return;
+    }
+
+    const participantCount =
+        data.match_participants?.[0]?.count ?? 0;
+
+    const newStatus =
+        participantCount >= data.maximum_players
+            ? "full"
+            : "open";
+
+    const { error: updateError } = await supabase
+        .from("matches")
+        .update({
+            status: newStatus,
+        })
+        .eq("id", matchId);
+
+    if (updateError) {
+        throw new Error(updateError.message);
+    }
 }
