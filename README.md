@@ -140,8 +140,6 @@ The application can then be opened using Expo Go or an appropriate emulator.
 
 ## 📸 Screenshots
 
-## 📸 Screenshots
-
 <p align="center">
   <img src="screenshots/Home.jpg" width="200" alt="KickOff home screen" />
   <img src="screenshots/Matches.jpg" width="200" alt="KickOff matches screen" />
