@@ -1,5 +1,4 @@
 import { render, waitFor } from "@testing-library/react-native";
-import React from "react";
 
 import MatchDetailsScreen from "../app/(protected)/matches/[id]";
 
@@ -66,17 +65,19 @@ describe("MatchDetailsScreen", () => {
         (hasJoinedMatch as jest.Mock).mockResolvedValue(false);
 
         const {
+            findByText,
             getByText,
             queryByText,
         } = await render(<MatchDetailsScreen />);
 
-        await waitFor(() => {
-            expect(
-                getByText("Tuesday night football")
-            ).toBeTruthy();
-        });
+        expect(
+            await findByText("Tuesday night football")
+        ).toBeTruthy();
 
         expect(getByText("Join Match")).toBeTruthy();
+
+        expect(queryByText("Edit Match")).toBeNull();
+        expect(queryByText("Delete Match")).toBeNull();
 
         expect(queryByText("Edit Match")).toBeNull();
 
