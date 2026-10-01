@@ -140,7 +140,20 @@ The application can then be opened using Expo Go or an appropriate emulator.
 
 ## 📸 Screenshots
 
-Screenshots of the completed application will be added here.
+## 📸 Screenshots
+
+<p align="center">
+  <img src="screenshots/Home.jpg" width="200" alt="KickOff home screen" />
+  <img src="screenshots/Matches.jpg" width="200" alt="KickOff matches screen" />
+  <img src="screenshots/MyMatches.jpg" width="200" alt="KickOff match details screen" />
+</p>
+
+<p align="center">
+  <img src="screenshots/MyGroups.jpg" width="200" alt="KickOff groups screen" />
+  <img src="screenshots/Group1.jpg" width="200" alt="KickOff create match part of group screen" />
+  <img src="screenshots/Group2.jpg" width="200" alt="KickOff group feed part of group screen" />
+  <img src="screenshots/Group3.jpg" width="200" alt="KickOff group member part of group screen" />
+</p>
 
 ## 🎓 Project Background
 
