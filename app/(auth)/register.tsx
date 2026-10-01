@@ -60,7 +60,6 @@ export default function RegisterScreen() {
             setIsSubmitting(true);
 
             const redirectUrl = Linking.createURL("/");
-            console.log("Redirect URL:", redirectUrl);
 
             const { data, error } = await supabase.auth.signUp({
                 email: trimmedEmail,
@@ -72,9 +71,6 @@ export default function RegisterScreen() {
                     },
                 },
             });
-
-            console.log("Signup data:", data);
-            console.log("Signup error:", error);
 
 
             if (error) {

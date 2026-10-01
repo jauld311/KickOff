@@ -48,7 +48,6 @@ export default function CreateMatchScreen() {
 
             router.back();
         } catch (error: unknown) {
-            console.log("Create match error:", error);
 
             let message = "Something went wrong.";
 

@@ -15,7 +15,6 @@ async function getCurrentUserId() {
     if (!user) {
         throw new Error("User not found");
     }
-    console.log("Current user ID:", user.id);
     return user.id;
 }
 
@@ -286,10 +285,6 @@ export async function getPostedMatches(): Promise<MatchWithCount[]> {
         .neq("status", "cancelled")
         .gte("match_date", new Date().toISOString())
         .order("match_date", { ascending: true });
-
-
-    console.log("Posted matches result:", data);
-    console.log("Posted matches error:", error);
 
     if (error) {
         throw new Error(error.message);
